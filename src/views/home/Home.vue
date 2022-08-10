@@ -5,34 +5,92 @@
       <div>购物街</div>
     </template>
   </nav-bar>
-  <home-swiper :banners="banners"/>
+  <scroll class="content" ref="scroll">
+    <home-swiper :banners="banners"/>
+    <recommend-view :recommends="recommends"/>
+    <feature-view/>
+    <tab-control class="tab-control" :titles="['流行','新款','精选']" @tabClick="tabClick"/>
+    <goods-list :goods="goods[currentType].list"/>
+  </scroll>
+  <back-top @click.native="backClick"/>
 </div>
 </template>
 
 <script>
-import {getHomeMultidata} from "@/network/home";
+import {getHomeMultidata,getHomeGoods} from "@/network/home";
 import NavBar from "@/components/common/navigationbar/NavBar";
 import HomeSwiper from "@/views/home/childComps/HomeSwiper";
+import RecommendView from "@/views/home/childComps/RecommendView";
+import FeatureView from "@/views/home/childComps/FeatureView";
+import TabControl from "@/components/content/tabControl/TabControl";
+import GoodsList from "@/components/content/goods/GoodsList";
+import Scroll from "@/components/common/scroll/Scroll";
+import BackTop from "@/components/content/backTop/BackTop";
+
 export default {
   name: "Home",
   components:{
     NavBar,
-    HomeSwiper
+    HomeSwiper,
+    RecommendView,
+    FeatureView,
+    TabControl,
+    GoodsList,
+    Scroll,
+    BackTop
   },
   data(){
     return {
       banners:[],
-      recommends:[]
+      recommends:[],
+      goods:{
+        'pop':{page: 0 , list: []},
+        'new':{page: 0 , list: []},
+        'sell':{page: 0 , list: []}
+      },
+      currentType:'pop'
     }
   },
   created() {
-    //1.请求多个数据
-    getHomeMultidata().then(res => {
-      // console.log(res);
-      this.banners = res.data.banner.list
-      this.recommends = res.data.recommend.list
-    })
-
+    this.getHomeMultidata()
+    this.getHomeGoods('pop')
+    this.getHomeGoods('new')
+    this.getHomeGoods('sell')
+  },
+  methods:{
+    /*网络请求*/
+    getHomeMultidata(){
+      //1.请求多个数据
+      getHomeMultidata().then(res => {
+        // console.log(res);
+        this.banners = res.data.banner.list
+        this.recommends = res.data.recommend.list
+      })
+    },
+    getHomeGoods(type){
+      const page = this.goods[type].page + 1
+      //2.请求商品数据
+      getHomeGoods(type,page).then(res => {
+        this.goods[type].list.push(...res.data.list)
+        this.goods[type].page += 1
+      })
+    },
+    /*事件监听*/
+    tabClick(index){
+      switch (index){
+        case 0:
+          this.currentType = 'pop'
+              break
+        case 1:
+          this.currentType = 'new'
+              break
+        case 2:
+          this.currentType = 'sell'
+      }
+    },
+    backClick(){
+      this.$refs.scroll.scroll.scrollTo(0,0,500)
+    }
   }
 }
 </script>
@@ -41,7 +99,29 @@ export default {
 .home-nav{
   background-color: var(--color-tint);
   color: white;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 10;
 }
-
-
+#home {
+  padding-top: 44px;
+  height: 100vh;
+  position: relative;
+}
+.tab-control{
+  position: sticky;
+  top: 44px;
+}
+/*.content{*/
+/*  height: calc(100% - 93px);*/
+/*}*/
+.content{
+  position: absolute;
+  top: 44px;
+  bottom: 49px;
+  left: 0;
+  right: 0;
+}
 </style>
