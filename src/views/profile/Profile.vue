@@ -1,13 +1,126 @@
 <template>
-<h2>我的</h2>
+<div>
+  <scroll class="content">
+    <ul>
+      <li>1个人信息</li>
+      <li>2个人信息</li>
+      <li>3个人信息</li>
+      <li>4个人信息</li>
+      <li>5个人信息</li>
+      <li>6个人信息</li>
+      <li>7个人信息</li>
+      <li>8个人信息</li>
+      <li>9个人信息</li>
+      <li>10个人信息</li>
+      <li>11个人信息</li>
+      <li>12个人信息</li>
+      <li>13个人信息</li>
+      <li>14个人信息</li>
+      <li>15个人信息</li>
+      <li>16个人信息</li>
+      <li>17个人信息</li>
+      <li>18个人信息</li>
+      <li>19个人信息</li>
+      <li>20个人信息</li>
+      <li>21个人信息</li>
+      <li>22个人信息</li>
+      <li>23个人信息</li>
+      <li>24个人信息</li>
+      <li>25个人信息</li>
+      <li>26个人信息</li>
+      <li>27个人信息</li>
+      <li>28个人信息</li>
+      <li>29个人信息</li>
+      <li>30个人信息</li>
+      <li>31个人信息</li>
+      <li>32个人信息</li>
+      <li>33个人信息</li>
+      <li>34个人信息</li>
+      <li>35个人信息</li>
+      <li>36个人信息</li>
+      <li>37个人信息</li>
+      <li>38个人信息</li>
+      <li>39个人信息</li>
+      <li>40个人信息</li>
+      <li>41个人信息</li>
+      <li>42个人信息</li>
+      <li>43个人信息</li>
+      <li>44个人信息</li>
+      <li>45个人信息</li>
+      <li>46个人信息</li>
+      <li>47个人信息</li>
+      <li>48个人信息</li>
+      <li>49个人信息</li>
+      <li>50个人信息</li>
+      <li>51个人信息</li>
+      <li>52个人信息</li>
+      <li>53个人信息</li>
+      <li>54个人信息</li>
+      <li>55个人信息</li>
+      <li>56个人信息</li>
+      <li>57个人信息</li>
+      <li>58个人信息</li>
+      <li>59个人信息</li>
+      <li>60个人信息</li>
+      <li>61个人信息</li>
+      <li>62个人信息</li>
+      <li>63个人信息</li>
+      <li>64个人信息</li>
+      <li>65个人信息</li>
+      <li>66个人信息</li>
+      <li>67个人信息</li>
+      <li>68个人信息</li>
+      <li>69个人信息</li>
+      <li>70个人信息</li>
+      <li>71个人信息</li>
+      <li>72个人信息</li>
+      <li>73个人信息</li>
+      <li>74个人信息</li>
+      <li>75个人信息</li>
+      <li>76个人信息</li>
+      <li>77个人信息</li>
+      <li>78个人信息</li>
+      <li>79个人信息</li>
+      <li>80个人信息</li>
+      <li>81个人信息</li>
+      <li>82个人信息</li>
+      <li>83个人信息</li>
+      <li>84个人信息</li>
+      <li>85个人信息</li>
+      <li>86个人信息</li>
+      <li>87个人信息</li>
+      <li>88个人信息</li>
+      <li>89个人信息</li>
+      <li>90个人信息</li>
+      <li>91个人信息</li>
+      <li>92个人信息</li>
+      <li>93个人信息</li>
+      <li>94个人信息</li>
+      <li>95个人信息</li>
+      <li>96个人信息</li>
+      <li>97个人信息</li>
+      <li>98个人信息</li>
+      <li>99个人信息</li>
+      <li>100个人信息</li>
+    </ul>
+  </scroll>
+</div>
 </template>
 
 <script>
+import Scroll from "@/components/common/scroll/Scroll";
 export default {
-  name: "Profile"
+  name: "Profile",
+  components:{
+    Scroll
+  }
 }
 </script>
 
 <style scoped>
-
+.content{
+  height: 300px;
+  background-color: red;
+  overflow: hidden;
+}
 </style>

@@ -5,14 +5,18 @@
       <div>购物街</div>
     </template>
   </nav-bar>
-  <scroll class="content" ref="scroll">
+  <scroll class="content"
+          ref="scroll"
+          :probe-type="3"
+          @scroll="contentScroll"
+          :pull-up-load="true" @pullingUp="loadMore">
     <home-swiper :banners="banners"/>
     <recommend-view :recommends="recommends"/>
     <feature-view/>
     <tab-control class="tab-control" :titles="['流行','新款','精选']" @tabClick="tabClick"/>
-    <goods-list :goods="goods[currentType].list"/>
+    <goods-list :goods="goods[currentType].list" :imageLoad="imageLoad"/>
   </scroll>
-  <back-top @click.native="backClick"/>
+  <back-top @click.native="backClick" v-show="isShow"/>
 </div>
 </template>
 
@@ -48,7 +52,9 @@ export default {
         'new':{page: 0 , list: []},
         'sell':{page: 0 , list: []}
       },
-      currentType:'pop'
+      currentType:'pop',
+      isShow:false,
+      refresh1:''
     }
   },
   created() {
@@ -56,6 +62,16 @@ export default {
     this.getHomeGoods('pop')
     this.getHomeGoods('new')
     this.getHomeGoods('sell')
+
+    //监听图片加载完成
+    // this.$bus.$on('itemImageLoad',() => {
+    //   this.$refs.scroll.refresh()
+    // })
+
+  },
+  mounted() {
+      const that = this
+    that.refresh1 =  this.debounce(this.imageLoad1,200)
   },
   methods:{
     /*网络请求*/
@@ -73,6 +89,7 @@ export default {
       getHomeGoods(type,page).then(res => {
         this.goods[type].list.push(...res.data.list)
         this.goods[type].page += 1
+        this.$refs.scroll.finishPullUp()
       })
     },
     /*事件监听*/
@@ -89,7 +106,30 @@ export default {
       }
     },
     backClick(){
-      this.$refs.scroll.scroll.scrollTo(0,0,500)
+      this.$refs.scroll.scroll.scrollTo(0,0)
+    },
+    contentScroll(position){
+      // console.log(position);
+      this.isShow = -position.y > 1000
+    },
+    loadMore(){
+      this.getHomeGoods(this.currentType)
+    },
+    imageLoad1(){
+      this.$refs.scroll.refresh()
+    },
+    imageLoad(){
+      this.refresh1()
+    },
+    /*防抖函数*/
+    debounce(func,delay){
+      let timer = null
+      return function (...args){
+        if(timer) clearTimeout(timer)
+        timer = setTimeout(() => {
+          func.apply(this, args)
+        },delay)
+      }
     }
   }
 }
@@ -115,7 +155,9 @@ export default {
   top: 44px;
 }
 /*.content{*/
-/*  height: calc(100% - 93px);*/
+/*  height: calc(100% - 50px);*/
+/*  overflow: hidden;*/
+/*  !*margin-bottom: 44px;*!*/
 /*}*/
 .content{
   position: absolute;
