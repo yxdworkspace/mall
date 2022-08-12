@@ -26,6 +26,7 @@ export default {
       observeDOM:true,
       click:true,
       pullUpLoad: this.pullUpLoad,
+      keepalive:true
     })
     // this.scroll(0,0)
     //2.监听滚动的位置
@@ -53,6 +54,9 @@ export default {
     },
     refresh(){
       this.scroll && this.scroll.refresh()
+    },
+    getScrollY(){
+      return this.scroll ? this.scroll.y : 0
     }
   },
 }

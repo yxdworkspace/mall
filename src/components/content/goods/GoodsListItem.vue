@@ -1,5 +1,5 @@
 <template>
-<div class="goods-item">
+<div class="goods-item" @click="itemClick">
   <img :src="goodsItem.show.img" alt="" @load="imageLoad">
   <div class="goods-info">
     <p>{{goodsItem.title}}</p>
@@ -10,6 +10,8 @@
 </template>
 
 <script>
+import router from "@/router";
+
 export default {
   name: "GoodsListItem",
   props:{
@@ -28,6 +30,12 @@ export default {
       }
     }
   },
+  methods:{
+    itemClick(){
+      router.push('detail')
+      router.push('/detail/' +  this.goodsItem.iid)
+    }
+  }
 }
 </script>
 
