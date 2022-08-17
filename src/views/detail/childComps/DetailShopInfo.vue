@@ -8,7 +8,7 @@
       <div class="shop-middle-item shop-middle-left">
         <div class="info-sells">
           <div class="sells-count">
-            {{shop.sells | sellCountFilter}}
+            {{shop.fans | sellCountFilter}}
           </div>
           <div class="sells-text">总销量</div>
         </div>
@@ -21,7 +21,7 @@
       </div>
       <div class="shop-middle-item shop-middle-right">
         <table>
-          <tr v-for="(item, index) in shop.score" :key="index">
+          <tr v-for="(item, index) in shop.sells" :key="index">
             <td>{{item.name}}</td>
             <td class="score" :class="{'score-better': item.isBetter}">{{item.score}}</td>
             <td class="better" :class="{'better-more': item.isBetter}"><span>{{item.isBetter ? '高':'低'}}</span></td>
@@ -40,7 +40,12 @@
 		name: "DetailShopInfo",
     props: {
 		  shop: {
-		    type: Object
+		    type: Object,
+        default(){
+		      return {
+
+          }
+        }
       }
     },
     filters: {

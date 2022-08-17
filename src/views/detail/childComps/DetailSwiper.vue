@@ -27,7 +27,6 @@ export default {
 
 <style scoped>
 .swiper-item{
-  height: 300px;
   overflow: hidden;
 }
 .slide img {
