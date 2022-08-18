@@ -1,19 +1,21 @@
 <template>
   <div id="detail">
-  <detail-nav-bar class="detail-nav"/>
-  <scroll class="content" ref="scroll">
+  <detail-nav-bar ref="nav" @titleClick="titleClick" class="detail-nav"/>
+  <scroll class="content" ref="scroll" :probe-type="3" @scroll="contentScroll">
     <detail-swiper :top-images="topImages"/>
     <detail-base-info :goods="goods"/>
     <detail-shop-info :shop="shop"/>
     <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"/>
-    <detail-param-info :param-info="paramInfo"/>
+    <detail-param-info ref="params" :param-info="paramInfo"/>
+    <detail-comment-info ref="comment" :comment-info="commentInfo"/>
+    <goods-list ref="recommend" :goods="recommends"/>
   </scroll>
   </div>
 </template>
 
 <script>
 import DetailSwiper from "@/views/detail/childComps/DetailSwiper";
-import {getDetail,Goods,Shop,GoodsParam} from "@/network/detail";
+import {getDetail,Goods,Shop,GoodsParam,getRecommend} from "@/network/detail";
 import NavBar from "@/components/common/navigationbar/NavBar";
 import router from "@/router";
 import DetailNavBar from "@/views/detail/childComps/DetailNavBar";
@@ -22,11 +24,32 @@ import DetailShopInfo from "@/views/detail/childComps/DetailShopInfo";
 import Scroll from "@/components/common/scroll/Scroll";
 import DetailGoodsInfo from "@/views/detail/childComps/DetailGoodsInfo";
 import DetailParamInfo from "@/views/detail/childComps/DetailParamInfo";
+import DetailCommentInfo from "@/views/detail/childComps/DetailCommentInfo";
+import GoodsList from "@/components/content/goods/GoodsList";
+import {debounce} from "@/common/utils";
 export default {
   name: "Detail",
   methods:{
       imageLoad(){
         this.$refs.scroll.refresh()
+        this.getThemeTopY()
+      },
+      titleClick(index){
+        // console.log(index);
+        this.$refs.scroll.scrollTo(0,-this.themeTopYs[index],100)
+      },
+      contentScroll(position){
+        const positionY = -position.y
+        let length = this.themeTopYs.length
+        for (let i =0 ; i < length;i++){
+          // if(positionY > this.themeTopYs[parseInt(i)] && positionY < this.themeTopYs[i+1]){
+          //
+          // }
+          if(this.currentIndex !== i && ((i < length - 1 && positionY >= this.themeTopYs[i] && positionY < this.themeTopYs[i+1]) || (i === length -1 && positionY >= this.themeTopYs[i]))) {
+              this.currentIndex = i
+              this.$refs.nav.currentIndex = this.currentIndex
+          }
+        }
       }
   },
   components:{
@@ -37,7 +60,9 @@ export default {
     DetailShopInfo,
     Scroll,
     DetailGoodsInfo,
-    DetailParamInfo
+    DetailParamInfo,
+    DetailCommentInfo,
+    GoodsList
   },
   data(){
     return {
@@ -46,7 +71,12 @@ export default {
       goods:{},
       shop:{},
       detailInfo:{},
-      paramInfo:{}
+      paramInfo:{},
+      commentInfo:{},
+      recommends:[],
+      themeTopYs:[],
+      getThemeTopY:null,
+      currentIndex:0
     }
   },
   created() {
@@ -62,7 +92,28 @@ export default {
       this.shop = new Shop(data.shopInfo)
       this.detailInfo =data.detailInfo
       this.paramInfo = new GoodsParam(data.itemParams.info,data.itemParams.rule)
+
+      if(data.rate.cRate !== 0){
+        this.commentInfo = data.rate.list[0]
+      }
+      this.getThemeTopY = debounce(() => {
+        this.themeTopYs = []
+        this.themeTopYs.push(0);
+        this.themeTopYs.push(this.$refs.params.$el.offsetTop);
+        this.themeTopYs.push(this.$refs.comment.$el.offsetTop);
+        this.themeTopYs.push(this.$refs.recommend.$el.offsetTop);
+      })
     })
+    //3.请求推荐数据
+    getRecommend().then(res => {
+      this.recommends = res.data.list
+    })
+  },
+  mounted() {
+
+  },
+  updated() {
+
   }
 }
 </script>
