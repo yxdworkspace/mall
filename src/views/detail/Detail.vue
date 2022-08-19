@@ -2,6 +2,9 @@
   <div id="detail">
   <detail-nav-bar ref="nav" @titleClick="titleClick" class="detail-nav"/>
   <scroll class="content" ref="scroll" :probe-type="3" @scroll="contentScroll">
+    <ul>
+      <li v-for="item in cartList">{{item}}</li>
+    </ul>
     <detail-swiper :top-images="topImages"/>
     <detail-base-info :goods="goods"/>
     <detail-shop-info :shop="shop"/>
@@ -10,12 +13,14 @@
     <detail-comment-info ref="comment" :comment-info="commentInfo"/>
     <goods-list ref="recommend" :goods="recommends"/>
   </scroll>
+    <detail-bottom-bar @addToCart="addToCart"/>
+    <back-top @click.native="backClick" v-show="isShow"/>
   </div>
 </template>
 
 <script>
 import DetailSwiper from "@/views/detail/childComps/DetailSwiper";
-import {getDetail,Goods,Shop,GoodsParam,getRecommend} from "@/network/detail";
+import {getDetail, getRecommend, Goods, GoodsParam, Shop} from "@/network/detail";
 import NavBar from "@/components/common/navigationbar/NavBar";
 import router from "@/router";
 import DetailNavBar from "@/views/detail/childComps/DetailNavBar";
@@ -26,7 +31,11 @@ import DetailGoodsInfo from "@/views/detail/childComps/DetailGoodsInfo";
 import DetailParamInfo from "@/views/detail/childComps/DetailParamInfo";
 import DetailCommentInfo from "@/views/detail/childComps/DetailCommentInfo";
 import GoodsList from "@/components/content/goods/GoodsList";
+import DetailBottomBar from "@/views/detail/childComps/DetailBottomBar";
+import BackTop from "@/components/content/backTop/BackTop";
 import {debounce} from "@/common/utils";
+import store from "@/store";
+
 export default {
   name: "Detail",
   methods:{
@@ -49,8 +58,34 @@ export default {
               this.currentIndex = i
               this.$refs.nav.currentIndex = this.currentIndex
           }
+          // if(this.currentIndex !== i && (positionY >= this.themeTopYs[i] && positionY < this.themeTopYs[i+1])) {
+          //   this.currentIndex = i
+          //   this.$refs.nav.currentIndex = this.currentIndex
+          // }
+          this.isShow = -position.y > 1000
         }
+      },
+      backClick(){
+        this.$refs.scroll.scroll.scrollTo(0,0)
+      },
+      addToCart(){
+        //1.获取购物车需要的信息
+        const product = {}
+        product.image = this.topImages[0]
+        product.title = this.goods.title
+        product.desc = this.goods.desc
+        product.price = this.goods.realPrice
+        product.iid = this.iid
+
+        // store.commit('addCart',product)
+        store.dispatch('addCart',product)
       }
+
+  },
+  computed:{
+    cartList(){
+      return store.state.cartShop
+    }
   },
   components:{
     NavBar,
@@ -62,7 +97,9 @@ export default {
     DetailGoodsInfo,
     DetailParamInfo,
     DetailCommentInfo,
-    GoodsList
+    GoodsList,
+    DetailBottomBar,
+    BackTop
   },
   data(){
     return {
@@ -76,7 +113,8 @@ export default {
       recommends:[],
       themeTopYs:[],
       getThemeTopY:null,
-      currentIndex:0
+      currentIndex:0,
+      isShow:false,
     }
   },
   created() {
@@ -102,6 +140,7 @@ export default {
         this.themeTopYs.push(this.$refs.params.$el.offsetTop);
         this.themeTopYs.push(this.$refs.comment.$el.offsetTop);
         this.themeTopYs.push(this.$refs.recommend.$el.offsetTop);
+        // this.themeTopYs.push(Number.MAX_VALUE)
       })
     })
     //3.请求推荐数据
@@ -126,7 +165,7 @@ export default {
   height: 100vh;
 }
 .content{
-  height: calc(100% - 44px);
+  height: calc(100% - 44px - 49px);
 }
 .detail-nav{
   position: relative;
