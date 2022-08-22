@@ -6,9 +6,9 @@
       </template>
     </nav-bar>
 
-    <cart-list/>
+    <cart-list :cart-list="cartList"/>
 
-
+    <bottom-bar/>
   </div>
 </template>
 
@@ -16,16 +16,21 @@
 import NavBar from "@/components/common/navigationbar/NavBar";
 import store from "@/store";
 import CartList from "@/views/cart/childComps/CartList";
+import BottomBar from "@/views/cart/childComps/BottomBar";
 export default {
   name: "Cart",
   components:{
     NavBar,
-    CartList
+    CartList,
+    BottomBar
   },
   computed:{
     cartLength(){
       return store.state.cartShop.length
-    }
+    },
+    cartList() {
+      return store.state.cartShop
+  }
   }
 }
 </script>
@@ -36,4 +41,9 @@ export default {
   color: white;
   /*font-weight: 700;*/
 }
+.cart{
+  height: 100vh;
+  position: relative;
+}
+
 </style>

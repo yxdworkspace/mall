@@ -2,9 +2,6 @@
   <div id="detail">
   <detail-nav-bar ref="nav" @titleClick="titleClick" class="detail-nav"/>
   <scroll class="content" ref="scroll" :probe-type="3" @scroll="contentScroll">
-    <ul>
-      <li v-for="item in cartList">{{item}}</li>
-    </ul>
     <detail-swiper :top-images="topImages"/>
     <detail-base-info :goods="goods"/>
     <detail-shop-info :shop="shop"/>
@@ -15,6 +12,7 @@
   </scroll>
     <detail-bottom-bar @addToCart="addToCart"/>
     <back-top @click.native="backClick" v-show="isShow"/>
+    <toast :message="message" :show="show"/>
   </div>
 </template>
 
@@ -35,6 +33,7 @@ import DetailBottomBar from "@/views/detail/childComps/DetailBottomBar";
 import BackTop from "@/components/content/backTop/BackTop";
 import {debounce} from "@/common/utils";
 import store from "@/store";
+import Toast from "@/components/common/toast/Toast";
 
 export default {
   name: "Detail",
@@ -76,9 +75,16 @@ export default {
         product.desc = this.goods.desc
         product.price = this.goods.realPrice
         product.iid = this.iid
-
+        product.newPrice = this.goods.newPrice
         // store.commit('addCart',product)
-        store.dispatch('addCart',product)
+        store.dispatch('addCart',product).then(res => {
+          this.show = true
+          this.message = res
+          setTimeout(() => {
+            this.show = false
+            this.message = ''
+          },1500)
+        })
       }
 
   },
@@ -99,7 +105,8 @@ export default {
     DetailCommentInfo,
     GoodsList,
     DetailBottomBar,
-    BackTop
+    BackTop,
+    Toast
   },
   data(){
     return {
@@ -115,6 +122,8 @@ export default {
       getThemeTopY:null,
       currentIndex:0,
       isShow:false,
+      message:'',
+      show:false
     }
   },
   created() {

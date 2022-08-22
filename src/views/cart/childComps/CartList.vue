@@ -1,7 +1,7 @@
 <template>
-<div class="cart-list">
-  <scroll class="content">
-  <cart-list-item v-for="item in cartShopList" :prpduct="item"/>
+<div>
+  <scroll class="content" ref="scroll">
+  <cart-list-item v-for="item in cartShopList" :product="item" />
   </scroll>
 </div>
 </template>
@@ -19,16 +19,30 @@ export default {
   components:{
     Scroll,
     CartListItem
+  },
+  activated() {
+    this.$refs.scroll.refresh()
+  },
+  props: {
+    cartList: {
+      type: Array,
+      default() {
+        return []
+      }
+    }
   }
 }
 </script>
 
 <style scoped>
-.cart-list{
-  height: calc(100% - 44px);
-}
 .content{
-  height: 100%;
+  position: absolute;
+  top: 44px;
+  bottom: 93px;
+  width: 100%;
+  left: 0;
+  right: 0;
   overflow: hidden;
 }
+
 </style>
